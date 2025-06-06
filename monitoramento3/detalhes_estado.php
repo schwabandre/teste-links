@@ -24,162 +24,143 @@ $linkIds = array_column($links, 'id');
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Links do Estado - <?= $nomeEstado ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/modern-style.css">
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: #f0f2f5;
-            margin: 0;
-            padding: 0;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            height: 70px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .voltar-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.3s;
-            margin-right: 20px;
-        }
-
-        .voltar-btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .conteudo {
-            padding: 100px 30px 80px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
         .titulo-estado {
             text-align: center;
-            margin-bottom: 30px;
-            color: #2c3e50;
+            margin-bottom: var(--space-8);
+            color: var(--text-primary);
+            font-size: var(--text-3xl);
+            font-weight: 700;
         }
 
         .links-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--space-6);
         }
 
         .link-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            padding: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-left: 4px solid #3498db; /* BORDA AZUL PADRÃO */
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-base);
+            border: 2px solid var(--border);
+            padding: var(--space-6);
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* REMOVIDAS AS CLASSES ONLINE/OFFLINE PARA BORDA */
-        
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-500);
+            transition: all var(--transition-base);
+        }
+
+        .link-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-300);
+        }
+
+        .link-card.online::before {
+            background: linear-gradient(90deg, var(--success-500), var(--success-400));
+        }
+
+        .link-card.offline::before {
+            background: linear-gradient(90deg, var(--error-500), var(--error-400));
+            animation: pulse-error 1.2s infinite;
+        }
+
         .link-card .nome {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
+            font-size: var(--text-xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+            line-height: 1.3;
         }
 
         .link-card .detalhe {
             display: flex;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-bottom: var(--space-3);
+            font-size: var(--text-sm);
         }
 
         .link-card .detalhe .rotulo {
-            font-weight: 500;
-            color: #555;
-            width: 100px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            width: 80px;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
         }
 
         .link-card .detalhe .valor {
             flex: 1;
-            color: #333;
+            color: var(--text-primary);
+            font-weight: 500;
         }
 
         .status {
             display: inline-flex;
             align-items: center;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 500;
-            font-size: 0.9rem;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .status.online {
-            background: rgba(40, 167, 69, 0.15);
-            color: #28a745;
+            background: var(--success-100);
+            color: var(--success-700);
+            border: 1px solid var(--success-200);
         }
 
         .status.offline {
-            background: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
-        }
-
-        /* CORREÇÃO: CORES PARA OS ÍCONES */
-        .status.online i.fas.fa-circle {
-            color: #28a745; /* VERDE PARA ONLINE */
-        }
-
-        .status.offline i.fas.fa-circle {
-            color: #dc3545; /* VERMELHO PARA OFFLINE */
+            background: var(--error-100);
+            color: var(--error-700);
+            border: 1px solid var(--error-200);
+            animation: pulse-error 1.5s infinite;
         }
 
         .status-icon {
-            margin-right: 5px;
-            font-size: 0.8rem;
-        }
-        
-        .rodape {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(44, 62, 80, 0.95);
-            color: #ecf0f1;
-            padding: 18px 25px;
-            font-size: 0.95rem;
-            text-align: center;
-            backdrop-filter: blur(8px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            z-index: 1000;
+            font-size: 8px;
         }
 
-        .atualizacao-contador {
-            font-family: 'Roboto Mono', monospace;
-            background: rgba(255,255,255,0.1);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+        .voltar-btn {
+            background: var(--primary-500);
+            color: white;
+            border: none;
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            transition: all var(--transition-base);
+            margin-right: var(--space-4);
         }
-        
+
+        .voltar-btn:hover {
+            background: var(--primary-600);
+            transform: translateY(-1px);
+        }
+
         .updating {
             filter: brightness(0.9);
             transform: scale(0.98);
@@ -201,15 +182,31 @@ $linkIds = array_column($links, 'id');
                 <div class="link-card" data-id="<?= $link['id'] ?>">
                     <div class="nome"><?= htmlspecialchars($link['nome']) ?></div>
                     <div class="detalhe">
-                        <span class="rotulo">IP:</span>
+                        <span class="rotulo">
+                            <i class="fas fa-network-wired"></i>
+                            IP:
+                        </span>
                         <span class="valor"><?= htmlspecialchars($link['ip']) ?></span>
                     </div>
                     <div class="detalhe">
-                        <span class="rotulo">Endereço:</span>
+                        <span class="rotulo">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Local:
+                        </span>
                         <span class="valor"><?= htmlspecialchars($link['endereco']) ?></span>
                     </div>
                     <div class="detalhe">
-                        <span class="rotulo">Status:</span>
+                        <span class="rotulo">
+                            <i class="fas fa-user"></i>
+                            Contato:
+                        </span>
+                        <span class="valor"><?= htmlspecialchars($link['contato']) ?></span>
+                    </div>
+                    <div class="detalhe">
+                        <span class="rotulo">
+                            <i class="fas fa-signal"></i>
+                            Status:
+                        </span>
                         <span class="valor">
                             <span class="status <?= $link['status'] ?>" id="status-<?= $link['id'] ?>">
                                 <i class="fas fa-circle status-icon"></i> 
@@ -223,7 +220,7 @@ $linkIds = array_column($links, 'id');
     </div>
 
     <div class="rodape">
-        Spacecom Monitoramento S/A © 2025 
+        <span>Spacecom Monitoramento S/A © 2025</span>
         <span class="atualizacao-contador" id="contador">Atualizando em: 5s</span>
     </div>
 
@@ -255,17 +252,18 @@ $linkIds = array_column($links, 'id');
                 
                 linksStatus.forEach(link => {
                     const statusElement = document.getElementById(`status-${link.id}`);
-                    if(statusElement) {
-                        // Atualiza o texto do status
-                        statusElement.textContent = link.status.charAt(0).toUpperCase() + link.status.slice(1);
+                    const card = document.querySelector(`.link-card[data-id="${link.id}"]`);
+                    
+                    if(statusElement && card) {
+                        // Atualizar o texto do status
+                        statusElement.innerHTML = `<i class="fas fa-circle status-icon"></i> ${link.status.charAt(0).toUpperCase() + link.status.slice(1)}`;
                         
-                        // Atualiza a classe do elemento de status
+                        // Atualizar a classe do elemento de status
                         statusElement.className = `status ${link.status}`;
                         
-                        // Adiciona o ícone novamente
-                        const icon = document.createElement('i');
-                        icon.className = 'fas fa-circle status-icon';
-                        statusElement.prepend(icon);
+                        // Atualizar a classe do card
+                        card.classList.remove('online', 'offline');
+                        card.classList.add(link.status);
                     }
                 });
                 
@@ -273,6 +271,12 @@ $linkIds = array_column($links, 'id');
                 console.error('Erro na verificação de status:', error);
             } finally {
                 verificacaoEmAndamento = false;
+                
+                // Remover classe de atualização
+                linkIds.forEach(id => {
+                    const card = document.querySelector(`.link-card[data-id="${id}"]`);
+                    if(card) card.classList.remove('updating');
+                });
             }
         }
 
@@ -331,3 +335,4 @@ function getNomeEstado($uf) {
     ];
     return $estados[strtoupper($uf)] ?? 'Estado Desconhecido';
 }
+?>
